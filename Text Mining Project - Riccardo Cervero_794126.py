@@ -9,8 +9,8 @@ import re
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
-stop_words = stopwords.words('english')
 from nltk.corpus import stopwords
+stop_words = stopwords.words('english')
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
