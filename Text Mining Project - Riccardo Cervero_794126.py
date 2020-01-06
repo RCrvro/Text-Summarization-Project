@@ -3,6 +3,7 @@
 
 #Import packages
 import numpy as np
+from numpy import *
 import pandas as pd
 import re
 import nltk
@@ -15,6 +16,17 @@ from nltk import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 import networkx as nx
 import matplotlib.pyplot as plt
+from keras import backend as K
+import gensim
+from bs4 import BeautifulSoup
+from keras.preprocessing.text import Tokenizer 
+from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import Input, LSTM, Embedding, Dense, Concatenate, TimeDistributed
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.utils import plot_model
+import warnings
+from sklearn.model_selection import train_test_split
 
 ## 0. TEXT PREPROCESSING
 
@@ -337,23 +349,6 @@ def BERT_summarize(txt):
   return s[0]
 
 # 2.3.2 Abstractive summarization with Sequence2Sequence LSTM model with Attention
-
-from keras import backend as K
-import gensim
-from numpy import *
-import numpy as np
-import pandas as pd 
-import re
-from bs4 import BeautifulSoup
-from keras.preprocessing.text import Tokenizer 
-from keras.preprocessing.sequence import pad_sequences
-from nltk.corpus import stopwords
-from tensorflow.keras.layers import Input, LSTM, Embedding, Dense, Concatenate, TimeDistributed
-from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.utils import plot_model
-import warnings
-from sklearn.model_selection import train_test_split
 
 #Function to preprocess the training e test feature set
 
