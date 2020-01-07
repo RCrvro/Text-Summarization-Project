@@ -19,6 +19,7 @@
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 \usepackage{placeins}
+\usepackage{float}
 %----------------------------------------------------------------------------------------
 
 \documentclass[fleqn,10pt]{SelfArx} % Document font size and equations flushed left
@@ -57,8 +58,8 @@
 
 \PaperTitle{Methodological approaches for Text Summarization} % Article title
 
-\Authors{\textbf{Riccardo Cervero}, \textbf{794126}\textsuperscript{1}} % Authors
-\affiliation{\textsuperscript{1}\textit{Universita` degli Studi di Milano Bicocca, CdLM in Data Science}} 
+\Authors{\textbf{Riccardo Cervero}, \textbf{794126}\textsuperscript{*}} % Authors
+\affiliation{\textsuperscript{*}\textit{Universita` degli Studi di Milano Bicocca, CdLM in Data Science}} 
 
 \Keywords{Abstractive Summarization --- Extractive Summarization} % Keywords - if you don't want any simply remove all the text between the curly brackets
 \newcommand{\keywordname}{Keywords} % Defines the keywords heading name
@@ -85,32 +86,43 @@
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-\section{Dataset} 
-The texts to be summarized hails from a portion of the \href{https://www.kaggle.com/snap/amazon-fine-food-reviews}{"Fine Food Reviews"} dataset, recording 100,000 natural-language-written reviews in English from more than 70,000 Amazon users. The original data span from October 1999 up to October 2012, including, besides plain text reviews, product and user information, ratings and, above all, a very brew reference summary offered by database providers which will constitute the ground truth during the neural network training phase and an evaluation benchmark. As far as reviews, the average number of sentences is 5, while about one sentence on average is used to summarize the content. The number of sentences in the original document can affect extractive results of summarization, and its distribution shows, in the first case, a slight concentration around the mean\footnote{Reviews composed by a number of sentences between 3 and 7 are about 64\% of the total.}, with a very long and thin tail.
+\section{Dataset Exploration} 
+The texts to be summarized hails from a portion of the \href{https://www.kaggle.com/snap/amazon-fine-food-reviews}{"Fine Food Reviews"} dataset, recording 100,000 natural-language-written reviews in English from more than 70,000 Amazon users. The original data span from October 1999 up to October 2012, including, besides plain text reviews, product and user information, ratings and, above all, a very brew reference summary offered by database providers which will constitute the ground truth during the neural network training phase and an evaluation benchmark. As far as reviews, the average number of sentences is 5, while about one sentence on average is used to summarize the content. The number of sentences in the original document can affect extractive results of summarization, and its distribution shows, in the first case, a slight concentration around the mean\footnote{Reviews composed by a number of sentences between 3 and 7 are about 64\% of the total.}, with a very long and thin tail.\par
+{\centering\vspace{10pt}
 \includegraphics[width=9cm, height=5cm]{text_dist.png}
+\captionof{figure}{Distribution of number of sentence per review\label{fig:img1}}
+\vspace{10pt}
+\par}
 Nevertheless, even though this characteristic of homogeneity could help avoid bias during generation and comparison of several summaries, it is counterbalanced by a greater variability\footnote{While coefficient of variance for sentences count is about 74\%, the one related to word count is 102\%} in the number of words per review.
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8.2cm, height=4.2cm]{word_dist.png}
+\captionof{figure}{Distribution of number of word per review\label{fig:img1}}
+\vspace{10pt}
+\par}
 %------------------------------------------------
-\section{Preprocessing}
-Review is a particular kind of text, often composed by neither non-professional writer nor journalist which thus tends to resemble spoken language, because includes abbreviations, slang and informal phrases, errors in punctuation and misspellings, etc. This documents appear as a mixture of heterogeneous forms of text, even presenting different lexical and syntactic structures within the same document. For this reason, pre-processing operations are compulsory to help reduce distortion and try to convert the corpus into standard form.
-
-
+\section{Text Pre-processing}
+Review is a particular kind of text, often composed by neither non-professional writer nor journalist which thus tends to resemble spoken language, because includes abbreviations, slang and informal phrases, errors in punctuation and misspellings, etc. This documents appear as a mixture of heterogeneous forms of text, even presenting different lexical and syntactic structures within the same document. For this reason, pre-processing operations are compulsory to help reduce distortion and try to convert the corpus into standard form. This goal is achieved in a preliminary way through the following operations. After having tokenized the document, as far as text normalization phase is concerned, it is necessary to convert all informal expressions that occur in the form of contractions\footnote{Such as \textit{couldn't}, which should be replaced by \textit{could not}} and put all the tokens to lower case. The second step consist in removing noisy part of the text to be analyzed: genitives, punctuation, symbols, special characters and numbers. Finally, stop words are eliminated because this very frequent tokens are useless and would distort the co-occurrence analysis during the stage of text representation. Neither stemming nor lematization operations are performed, because inflected and derived tokens provide fundamental information that both simplest algorithms and neural network cannot afford to lose during elaboration of a summary containing the most relevant concepts.
 %------------------------------------------------
+\section{Extractive Summarization}
 
-
-\section{Extractive methods}
-
+\subsection{Topic-focused method: Latent Semantic Analysis}
+\subsection{Indicator Representation methods}
+\subsubsection{Graph-based: TextRank}
+\subsubsection{Feature-based: Luhn's Algorithm}
+\subsubsection{Deep Learning based: BERT Summarizer}
 %------------------------------------------------
-
-\section{Abstractive methods}
-
+\section{Abstractive Summarization}
 %------------------------------------------------
-
 \section{Evaluation}
 Only one sentence
 %------------------------------------------------
-
 \section{Results and Discussion}
-
+%----------------------------------------------------------------------------------------
+%	Code
+%----------------------------------------------------------------------------------------
+\section*{Code}
+\href{https://github.com/RCrvro/Text-Summarization-Project}{Code is available at this link.}
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
