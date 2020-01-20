@@ -165,26 +165,10 @@ This project also calls for the implementation of a packaged TextRank variant: \
 Luhn's Algorithm is an early heuristic method which performs extractive summarization task by computing the “significance” of the word from the frequency. The significance in the document is interpreted as an evaluation of the relevance of a term within the sentence. The algorithm is a naive approach based on Tf-Idf representation and looking at the “window size” of non-important words among relevant words.\\
 The stages are:
 \begin{enumerate}
-  \item Calculate signficant words in the text by means of a min and maximum ratio of occurence, ignoring most frequent words and least frequent ones 
-  \item For each sentence in the text calculate its weight based on the number of keywords squared divided by the windows size, which is the maximum distance between two significant words
-  \item Sort sentences in descending order based on their weight and output the first n of them.
+  \item Extraction of keywords in the text, namely signficant terms, by selecting those above a mininum threshold of term frequency $tf$ and under a maximum, thus ignoring most frequent and rare ones 
+  \item Computation of sentences weights based on the squared number of keywords divided by the windows size, which is the maximum distance between two significant words: $$s_i=\frac{\text{Number of Keywords in i}^2}{\text{Span}}$$
+  \item Sorting sentences in descending order of score and selection of the best N-ranked.
 \end{enumerate}
-
-
-1. In the first stage, we try to determine which words are more significant towards the meaning of document. Luhn states that this is first done by doing a frequency analysis, then finding words which are significant, but not unimportant English words.
-2. In the second phase, we find out the most common words in the document, and then take a subset of those that are not these most common english words, but are still important. It usually consists of following three steps:
-
-It begins with transforming the content of sentences into a mathematical expression, or vector(represented below through binary representation). Here we use a bag of words , which ignores all the filler words. Filler words are usually the supporting words that do not have any impact on our document meaning. Then we count all the valuable words left to us. For example,
-Mytable
-
-In the above table we can clearly see that the words like an and a that are the stopwords are not considered while evaluation.
-
-In this step we use evaluate sentences using sentence scoring technique. We can use the scoring method as illustrated below.
-Score= (Number of meaningful words)2/(Span of meaningful words)
-A span here refers to the part of sentence(in our case)/document consisting all the meaningful words.
-
-Tf-idf can also be used in order to prioritize the words in a sentence.
-Once the sentence scoring is complete, the last step is simply to select those sentences with the highest overall rankings.
 \subsubsection{Deep Learning based: BERT Summarizer}
 %------------------------------------------------
 \section{Abstractive Summarization}
