@@ -68,7 +68,7 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\Abstract{}
+\Abstract{Customer reviews can often be long and descriptive. Analyzing these reviews manually, as you can imagine, is really time-consuming. This is where the brilliance of Natural Language Processing can be applied to generate a summary for long reviews. We will be working on a really cool dataset. Our objective here is to generate a summary for the Amazon Fine Food reviews using the abstraction-based approach we learned about above.}
 
 %----------------------------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ Sentences presenting many of the most important topics - based on weights record
 \\
 As anticipated, when the algorithm uses the term frequency divided by the length, it tends to favor shorter sentences with frequent terms, while exploiting tf.idf function it operates an additional filter on those sentences that contain rarer words, those more "specialized" with respect to the topic. On the contrary, application of simple term frequency weights only makes method focus on the raw number of times a word occurs.
 \subsection{Indicator Representation methods}
-Original text can also be analyzed by means of a set of relevance indicators, which do not aim to discover topics. In this case, each sentence is indeed described by a list of features - such as length of the sentence, position in the document, presence of certain words, etc -, which can be then combined - within a graph or using Machine Learning techniques -, to obtain a unique scoring useful to rank and select most important sentences. Three different approaches have been implemented.
+Original text can also be analyzed by means of a set of relevance indicators, which do not aim to discover topics. In this case, each sentence is indeed described by a list of features - such as length of the sentence, position in the document, presence of certain words, etc -, which can be then combined in many ways to obtain a unique scoring useful to rank and select most important sentences. Three different approaches have been implemented.
 \subsubsection{Graph-based: TextRank}
 Graph-based summarization methodologies derive from PageRank algorithm, which assigns numerical weights to the related elements of a set, with the aim of quantifying the relative importance within the group. In this case, the method will represent the entire review as a network of inter-connected sentences, each one associated with a node. Edges join these vertices if and only if the similarity between the two given sentences exceeds a certain threshold. At the end, graph representation will return two outputs:
 \begin{itemize}
@@ -162,18 +162,71 @@ Hereafter, \textit{TextRank} implements \textit{PageRank} algorithm to extract a
 \subsubsection{TextRank variant}
 This project also calls for the implementation of a packaged TextRank variant: \texttt{PytextRank}. This performs a lemmatization of the text, constructing a \textit{lemma graph} to represent links among the candidate sentences.
 \subsubsection{Feature-based: Luhn's Algorithm}
-Luhn's Algorithm is an early heuristic method which performs extractive summarization task by computing the “significance” of the word from the frequency. The significance in the document is interpreted as an evaluation of the relevance of a term within the sentence. The algorithm is a naive approach based on Tf-Idf representation and looking at the “window size” of non-important words among relevant words.\\
+Luhn's Algorithm is an early heuristic method which performs extractive summarization task by computing the “significance” of the word from the frequency. The significance in the document is interpreted as an evaluation of the relevance of a term within the sentence. The algorithm is a naive approach based on $tf$ representation and looking at the “window size” of non-important words among relevant words.\\
 The stages are:
 \begin{enumerate}
-  \item Extraction of keywords in the text, namely signficant terms, by selecting those above a mininum threshold of term frequency $tf$ and under a maximum, thus ignoring most frequent and rare ones 
-  \item Computation of sentences weights based on the squared number of keywords divided by the windows size, which is the maximum distance between two significant words: $$s_i=\frac{\text{Number of Keywords in i}^2}{\text{Span}}$$
+  \item Extraction of keywords in the text, namely signficant terms, by selecting those above a mininum threshold of - normalized by review length - term frequency $\frac{tf_{t,d}}{|d|}$ and under a maximum, thus ignoring most frequent and rare ones 
+  \item Computation of sentences weights based on the squared number of keywords divided by the windows size, which is the maximum distance between two significant words: $$s_i=\frac{\text{Number}^2\;\text{of Keywords in i}}{\text{Span}}$$
   \item Sorting sentences in descending order of score and selection of the best N-ranked.
 \end{enumerate}
+In this case, minimum and maximum are chosen to be respectively 5\% and 50\%.\\
+To sum up, the most important sentence will be the one maximizing the number of terms which are neither too frequent - over the half number of tokens in the entire review - nor too rare and/or minimizing the span between most distant keywords.
 \subsubsection{Deep Learning based: BERT Summarizer}
+All summarization models just presented have big limitations. Beyond technical reasons, this is due to the existence of a semantic threshold dividing the human being from the computer: men, in fact, manage to recognize the context of the sentences at a greater depth, extracting more clear meanings. Although it could not be enough to break down this threshold, to obtain better summaries it is necessary to reach a higher level of abstraction in the model, able to capture as much information as possible from the text. For this reason, neural networks are used. In particular, one of the neural networks most frequently involved in natural language processing tasks is BERT model.\\
+\textit{Bidirectional Encoder Representations from Transformers BERT} is a pre-train deep bidirectional neural network which offers representations from unlabeled text. While directional models read text sequentially - left-to-right or right-to-left -, BERT reads the entire sequence of words at once. This characteristic allows it to learn the context of a word based on all of its surroundings: both left and right words. In details, the context is extracted by a Transformer, an attention mechanism that finds contextual relations between terms in a text. Thus Transformer includes two separate components:
+\begin{itemize}
+    \item an encoder reading input review
+    \item a decoder producing a prediction for the NLP task to be accomplished. 
+\end{itemize}
+For any of these tasks, BERT's goal is to generate a language model, represented by a sequence of vectors in output, each one associated to an input token.\\
+Moreover, the analysis is enhanced by using \textit{coreference techniques}. \textit{Coreference} occurs when two or more expressions in a text refer to the same entity. In computational linguistics, to derive the correct interpretation of a text and estimate the relative importance of various mentioned subjects, referring expressions must be connected to the right element. In this way, BERT succeeds in inferring a better context for each word.\\
+As said, this neural network can be modified to create several state-of-art models for NLP tasks. In particular, as far as text summarization, a \textit{Bert Extractive Summarizer} has been recently released by fine-tuning BERT architecture. This Summarizer works by first embedding the single tokens. Secondly, it builds a "Segmentation Embedding" to detect sentences boundary and embed them. Thirdly, the model embeds position in the document. Finally, the algorithm performs a clustering process, finding the sentences that are closest to the cluster's centroids.
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8.2cm, height=4.2cm]{BERT.png}
+\captionof{figure}{Text Representation in BERT Summarizer\label{fig:img1}}
+\vspace{10pt}
+\par}
 %------------------------------------------------
 \section{Abstractive Summarization}
+Differently from what has been done up to now, abstractive summarization is not configured as a mere selection of important sentences - based on completely different criteria - but as a method to express the concepts of the source in a new interesting form. The model learns and reproduces its own expressions and sentences to offer a more coherent summary, similar to what a human being would generate. In this way, its result will not copy the original structure, words and sub-sentences - the majority of which, even if present in the most relevant sentence, often prove to be useless. On the contrary, the information needed to achieve the goal will be searched in the patterns contained within a training corpus.It is therefore clear how, in this case, it is fundamental to implement an even more complex model than the previous one.
+\subsection{Seq2Seq Modeling with Attention Mechanism}
+A "\textit{Sequence-to-Sequence}" task is a problem involving sequential information. Text Summarization can be considered as a sequence modelling problem, because any prediction depends on the analysis of the sequence of tokens and sentences. More precisely, it is configured as a \textit{Many-to-Many Seq2Seq} problem, where both input and output - the original Amazon reviews and respective summaries - are sequences composed by more than one token.\\
+As explained in the previous section, the typical \textit{Seq2Seq} model relies on two principal components: an encoder and a decoder. The task of the encoder network is to create a smaller dimensional representation of the input text. This representation is then forwarded to a decoder network which generates a sequence of its own that represents the output. This \textit{encoder-decoder} architecture is particularly suitable, as is the case with Text Summarization, when input and output sequences are of different lengths.\\
+The preferred class of models for such operations is therefore that of \textit{Recurrent Neural Networks (RNNs)}. What distinguishes \textit{RNNs} from normal feed-forward networks is that hidden layers, in addition to inputs from the input layer, also receive their own output associated with the previous state, conveniently weighted. This mechanism serves to provide the neural network with a memory about the sequence of tokens. Nevertheless, \textit{RNNs} are not able to model long-term dependencies because their back propagation algorithm can cause two negative effects: vanishing gradients and exploding gradients. For this reason, other models are preferred that can avoid these risks and describe the dependencies among tokens within long documents. In this project, the chosen alternative is \textit{Long Short Term Memory LSTM}, wherein the function just mentioned is implemented through blocks - gates -, executing several operations.\\ Thus, the final architecture is constituted by two neural networks: an \textit{Encoder LSTM} and a \textit{Decoder LSTM}.
+\subsubsection{Training}
+During this stage, encoder and decoder work together to learn the best way to predict the target sequence.\\ At each timestep, the Encoder receives an additional word of the sequence, processes the new data and acquires the contextual information. Then, the final state of the Encoder, i.e. the output of the last timestep, initializes the Decoder component, which in turn reads the entire target sequence token-by-token and predicts a sequence offset at each timestep. In this way, the Decoder \textit{LSTM} is trained to predict the next word in the sequence given the previous one.\\
+\textit{"start"} and \textit{"end"} in Figure 6 are special tokens added to the target sequence before passing it to the Decoder which respectively begin and stop the prediction.\par
+{\centering\vspace{10pt}
+\includegraphics[width=8.2cm, height=4cm]{LSTM.png}
+\captionof{figure}{Encoder-Decoder LSTM architecture\label{fig:img1}}
+\vspace{10pt}
+\par}
+\subsubsection{Inference}
+After training, the model is tested on new reviews whose target sequence is unknown. Inference process involves 6 steps:
+\begin{enumerate}
+    \item Encoding of the input sequence and initialization of Decoder with subsequent internal states of the Encoder
+    \item Passing of \textit{"start"} token as input to the Decoder
+    \item Running of the Decoder in combination with the internal states related to current timestep 
+    \item Computation of the probability for the next word and selection of the one maximizing this probability
+    \item Passing of this selected word as an input to the Decoder in the next timestep and update the internal states with the current timestep
+    \item Repetition of 3rd, 4th and 5th step until
+    \begin{itemize}
+        \item \textit{"end"} token is generated, i.e. when the input sequence runs out
+        \item[] \textbf{or}
+        \item when hitting a maximum target sequence length 
+    \end{itemize}
+\end{enumerate}
+\subsubsection{Attention Mechanism}
+As useful as this encoder-decoder architecture is, there are certain limitations that come with it.
+
+The encoder converts the entire input sequence into a fixed length vector and then the decoder predicts the output sequence. This works only for short sequences since the decoder is looking at the entire input sequence for the prediction
+Here comes the problem with long sequences. It is difficult for the encoder to memorize long sequences into a fixed length vector
+“A potential issue with this encoder-decoder approach is that a neural network needs to be able to compress all the necessary information of a source sentence into a fixed-length vector. This may make it difficult for the neural network to cope with long sentences. The performance of a basic encoder-decoder deteriorates rapidly as the length of an input sentence increases.”
+So how do we overcome this problem of long sequences? This is where the concept of attention mechanism comes into the picture. It aims to predict a word by looking at a few specific parts of the sequence only, rather than the entire sequence. It really is as awesome as it sounds!
 %------------------------------------------------
 \section{Evaluation}
+COMMENTA QUALCOSA DEL CODICE SOPRA
 Only one sentence
 %------------------------------------------------
 \section{Results and Discussion}
@@ -194,6 +247,14 @@ GloVe: https://nlp.stanford.edu/projects/glove/
 PyTextRank: https://pypi.org/project/pytextrank/
 
 Luhn: http://courses.ischool.berkeley.edu/i256/f06/papers/luhn58.pdf
+
+BERT: https://arxiv.org/abs/1810.04805
+
+BERT Architecture: https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270
+
+Bert Extractive Summarizer: https://pypi.org/project/bert-extractive-summarizer/
+
+BEAM SEARCH: https://www.analyticsvidhya.com/blog/2018/03/essentials-of-deep-learning-sequence-to-sequence-modelling-with-attention-part-i/?utm_source=blog&utm_medium=comprehensive-guide-text-summarization-using-deep-learning-python 
 
 Edmundson: https://iq.opengenus.org/edmundson-heuristic-method-for-text-summarization/
 %----------------------------------------------------------------------------------------
