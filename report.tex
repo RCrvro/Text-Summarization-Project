@@ -218,15 +218,39 @@ After training, the model is tested on new reviews whose target sequence is unkn
     \end{itemize}
 \end{enumerate}
 \subsubsection{Attention Mechanism}
-As useful as this encoder-decoder architecture is, there are certain limitations that come with it.
+This architecture composed of an Encoder, which converts input into fixed length vectors, and Decoder, which predicts summaries by reading this entire embedding, is plagued by a main limitation: the Encoder struggles to compress long input sentences into a vector and the performance of the neural network deteriorates rapidly as the length increases. This bottleneck is overcome thanks to the so-called \textit{"Attention Mechanism"}, which aims to produce the next word by looking only at specific parts of the sequence. The key intuition behind it consists in selecting the words of the input text which are more relevant to generate a new token at each timestep. First, this is made by computing a score $e_{ij}$ evaluating the alignment between
+\begin{itemize}
+    \item $h_j$, i.e. the hidden state output by Encoder at each timestep of the input sequence j
+    \item $s_i$, i.e. the hidden state output by Decoder at each timestep of the target sequence i 
+\end{itemize}
+In other words, $e_{ij}$ is based on semantic links among input and target tokens, and, in our case, corresponds to the following additive formulation:
+$$e_{ij}=V^Ttahn(W[s_i,h_j])$$ 
+where $V$ and $W$ are the two trainable weights matrices for the neural networks, thanks to which it learns to predict the next word in the sequence. The $e_{ij}$ scores are converted to mutually exclusive probabilities using a softmax function, producing the so-called "attention weights": 
+$$a_{ij}=\frac{e^{e_ij}}{\sum_{k=1}e^{e_ik}}$$
+Then, computing the linear combination among the attention weights and hidden states of the decoder $h_j$, the algorithm extract the context vector of timestep i $C_i$. $C_i$ is concatenated to the hidden state of the decoder at timestep i $s_i$, and this result is finally mapped to the output: the word at timestep i, $\hat{y}_i$ in Figure 6.\\
+\subsubsection{Final model}
+SONO DUE RETI
+Stacked LSTM: it is composed of 3 LSTM 
 
-The encoder converts the entire input sequence into a fixed length vector and then the decoder predicts the output sequence. This works only for short sequences since the decoder is looking at the entire input sequence for the prediction
-Here comes the problem with long sequences. It is difficult for the encoder to memorize long sequences into a fixed length vector
-“A potential issue with this encoder-decoder approach is that a neural network needs to be able to compress all the necessary information of a source sentence into a fixed-length vector. This may make it difficult for the neural network to cope with long sentences. The performance of a basic encoder-decoder deteriorates rapidly as the length of an input sentence increases.”
-So how do we overcome this problem of long sequences? This is where the concept of attention mechanism comes into the picture. It aims to predict a word by looking at a few specific parts of the sequence only, rather than the entire sequence. It really is as awesome as it sounds!
+SPIEGA 'rmsprop' E loss='sparse\_categorical\_crossentropy'\\
+
+The final model architecture appears as in the Figure 7.
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8.2cm, height=11cm]{model.png}
+\captionof{figure}{Final model architecture\label{fig:img1}}
+\vspace{10pt}
+\par}
+Due to the early stopping condition, the model training stopped at 29th epoch, requiring almost 7 hours. The learning process is visualized with Figure 8:
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8cm, height=5cm]{vizproc.png}
+\captionof{figure}{Loss results over the epochs\label{fig:img1}}
+\vspace{10pt}
+\par}
+A slight increase in the validation loss is shown after tenth epoch.
 %------------------------------------------------
 \section{Evaluation}
-COMMENTA QUALCOSA DEL CODICE SOPRA
 Only one sentence
 %------------------------------------------------
 \section{Results and Discussion}
@@ -256,7 +280,7 @@ Bert Extractive Summarizer: https://pypi.org/project/bert-extractive-summarizer/
 
 BEAM SEARCH: https://www.analyticsvidhya.com/blog/2018/03/essentials-of-deep-learning-sequence-to-sequence-modelling-with-attention-part-i/?utm_source=blog&utm_medium=comprehensive-guide-text-summarization-using-deep-learning-python 
 
-Edmundson: https://iq.opengenus.org/edmundson-heuristic-method-for-text-summarization/
+Bahdanau Attention: https://arxiv.org/pdf/1409.0473.pdf
 %----------------------------------------------------------------------------------------
 
 \end{document}
