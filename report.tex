@@ -68,7 +68,8 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\Abstract{Customer reviews can often be long and descriptive. Analyzing these reviews manually, as you can imagine, is really time-consuming. This is where the brilliance of Natural Language Processing can be applied to generate a summary for long reviews. We will be working on a really cool dataset. Our objective here is to generate a summary for the Amazon Fine Food reviews using the abstraction-based approach we learned about above.}
+\Abstract{Customer reviews on E-commerce websites can often be long and too descriptive. Reading prolix comments can be annoying to the other users and analyzing these texts manually is extremely time-consuming. Thus, technical specifications can be applied to generate a summary for any review.\\
+In the context of Natural Language Processing there are various types of Text Summarization methodologies. The objective of this project is to compare some of them, to test their performance in terms of computational complexity and quality of the result. Therefore, 5 algorithms specialized in Estractive Summarization will be implemented, based on the extraction of topics and features, on the construction of a graph or on Deep Learning methods. In addition, a complex architecture suitable for Abstractive Summarization, namely capable of recreating a summary instead of simply selecting the most important parts of the text, will be presented and used. In the last part, all these models will be evaluated manually, to obtain a clearer and more direct analysis of their characteristics.}
 
 %----------------------------------------------------------------------------------------
 
@@ -189,21 +190,63 @@ As said, this neural network can be modified to create several state-of-art mode
 \par}
 %------------------------------------------------
 \section{Abstractive Summarization}
-Differently from what has been done up to now, abstractive summarization is not configured as a mere selection of important sentences - based on completely different criteria - but as a method to express the concepts of the source in a new interesting form. The model learns and reproduces its own expressions and sentences to offer a more coherent summary, similar to what a human being would generate. In this way, its result will not copy the original structure, words and sub-sentences - the majority of which, even if present in the most relevant sentence, often prove to be useless. On the contrary, the information needed to achieve the goal will be searched in the patterns contained within a training corpus.It is therefore clear how, in this case, it is fundamental to implement an even more complex model than the previous one.
+Differently from what has been done up to now, abstractive summarization is not configured as a mere selection of important sentences - based on completely different criteria - but as a method to express the concepts of the source in a new interesting form. The model learns and reproduces its own expressions and sentences to offer a more coherent summary, similar to what a human being would generate. In this way, its result will not copy the original structure, words and sub-sentences - the majority of which, even if present in the most relevant sentence, often prove to be useless. On the contrary, the information needed to achieve the goal will be searched in the patterns contained within a training corpus. It is therefore clear how, in this case, it is fundamental to implement an even more complex model than the previous one.
 \subsection{Seq2Seq Modeling with Attention Mechanism}
 A "\textit{Sequence-to-Sequence}" task is a problem involving sequential information. Text Summarization can be considered as a sequence modelling problem, because any prediction depends on the analysis of the sequence of tokens and sentences. More precisely, it is configured as a \textit{Many-to-Many Seq2Seq} problem, where both input and output - the original Amazon reviews and respective summaries - are sequences composed by more than one token.\\
 As explained in the previous section, the typical \textit{Seq2Seq} model relies on two principal components: an encoder and a decoder. The task of the encoder network is to create a smaller dimensional representation of the input text. This representation is then forwarded to a decoder network which generates a sequence of its own that represents the output. This \textit{encoder-decoder} architecture is particularly suitable, as is the case with Text Summarization, when input and output sequences are of different lengths.\\
-The preferred class of models for such operations is therefore that of \textit{Recurrent Neural Networks (RNNs)}. What distinguishes \textit{RNNs} from normal feed-forward networks is that hidden layers, in addition to inputs from the input layer, also receive their own output associated with the previous state, conveniently weighted. This mechanism serves to provide the neural network with a memory about the sequence of tokens. Nevertheless, \textit{RNNs} are not able to model long-term dependencies because their back propagation algorithm can cause two negative effects: vanishing gradients and exploding gradients. For this reason, other models are preferred that can avoid these risks and describe the dependencies among tokens within long documents. In this project, the chosen alternative is \textit{Long Short Term Memory LSTM}, wherein the function just mentioned is implemented through blocks - gates -, executing several operations.\\ Thus, the final architecture is constituted by two neural networks: an \textit{Encoder LSTM} and a \textit{Decoder LSTM}.
-\subsubsection{Training}
-During this stage, encoder and decoder work together to learn the best way to predict the target sequence.\\ At each timestep, the Encoder receives an additional word of the sequence, processes the new data and acquires the contextual information. Then, the final state of the Encoder, i.e. the output of the last timestep, initializes the Decoder component, which in turn reads the entire target sequence token-by-token and predicts a sequence offset at each timestep. In this way, the Decoder \textit{LSTM} is trained to predict the next word in the sequence given the previous one.\\
+The preferred class of models for such operations is therefore that of \textit{Recurrent Neural Networks (RNNs)}. What distinguishes \textit{RNNs} from normal feed-forward networks is that hidden layers, in addition to inputs from the input layer, also receive their own output associated with the previous state, conveniently weighted. This mechanism serves to provide the neural network with a memory about the sequence of tokens. Nevertheless, \textit{RNNs} are not able to model long-term dependencies because their back propagation algorithm can cause two negative effects: vanishing gradients and exploding gradients. For this reason, other models are preferred that can avoid these risks and describe the dependencies among tokens within long documents. In this project, the chosen alternative is \textit{Long Short Term Memory LSTM}, wherein the function just mentioned is implemented through blocks - gates -, executing several operations.\\ Thus, the final architecture is constituted by two neural networks: an \textit{Encoder LSTM} and a \textit{Decoder LSTM}. Encoder and Decoder work together to find the best way to predict the target sequence. At each timestep, the Encoder receives an additional word of the sequence, processes the new data and acquires the contextual information. Then, the final state of the Encoder, i.e. the output of the last timestep, initializes the Decoder component, which in turn reads the entire target sequence token-by-token and predicts a sequence offset at each timestep. In this way, the Decoder \textit{LSTM} becomes able to predict the next word in the sequence given the previous one.\\
 \textit{"start"} and \textit{"end"} in Figure 6 are special tokens added to the target sequence before passing it to the Decoder which respectively begin and stop the prediction.\par
 {\centering\vspace{10pt}
 \includegraphics[width=8.2cm, height=4cm]{LSTM.png}
 \captionof{figure}{Encoder-Decoder LSTM architecture\label{fig:img1}}
 \vspace{10pt}
 \par}
-\subsubsection{Inference}
-After training, the model is tested on new reviews whose target sequence is unknown. Inference process involves 6 steps:
+\subsubsection{Attention Mechanism}
+This architecture composed of an Encoder, which converts input into fixed length vectors, and Decoder, which predicts summaries by reading this entire embedding, is plagued by a main limitation: the Encoder struggles to compress long input sentences into a vector and the performance of the neural network deteriorates rapidly as the length increases. This bottleneck is overcome thanks to the so-called \textit{"Attention Mechanism"}, which aims to produce the next word by looking only at specific parts of the sequence. The key intuition behind it consists in selecting the words of the input text which are more relevant to generate a new token at each timestep. First, this is made by computing a score $e_{ij}$ evaluating the alignment between
+\begin{itemize}
+    \item $h_j$, i.e. the hidden state output by Encoder at each timestep of the input sequence j
+    \item $s_i$, i.e. the hidden state output by Decoder at each timestep of the target sequence i 
+\end{itemize}
+In other words, $e_{ij}$ is based on semantic links among input and target tokens, and, in our case, corresponds to the following additive formulation:
+$$e_{ij}=V^Ttahn(W[s_i,h_j])$$ 
+where $V$ and $W$ are the two trainable weights matrices for the neural networks, thanks to which it learns to predict the next word in the sequence. The $e_{ij}$ scores are converted to mutually exclusive probabilities using a softmax function, producing the so-called "attention weights": 
+$$a_{ij}=\frac{e^{e_ij}}{\sum_{k=1}e^{e_ik}}$$
+Then, computing the linear combination among the attention weights and hidden states of the decoder $h_j$, the algorithm extract the context vector of timestep i $C_i$. $C_i$ is concatenated to the hidden state of the decoder at timestep i $s_i$, and this result is finally mapped to the output: the word at timestep i, $\hat{y}_i$ in Figure 6.
+\subsubsection{Final model: Training phase}
+During the training process, the final architecture involves the following components and operations:
+\begin{enumerate}
+    \item At each iteration, an Input layer is initialized with a batch of texts to be summarized, represented by a vector of the indexes of the words they contain. All this vectors compose a matrix.
+    \item An Embedding layer receives the matrix just mentioned and compresses it in a dense vector of fixed dimension
+    \item This dense vector is passed to a block of 3 LSTM stacked on top of each other, which allows to gain a better representation of the sequence compared to a single LSTM. Within this block, each of the 3 components returns its internal output to the next one. Additionally, to improve performances, they all incorporate a dual dropout mechanism:
+    \begin{itemize}
+        \item a dropout in the input conversion of each internal iteration
+        \item a recurrent dropout when calculating hidden outputs
+    \end{itemize}
+\end{enumerate}
+These first 5 layers make up the Encoder part. The Decoder, however, consists in the following ones:
+\begin{enumerate}
+    \item[4.] Its own Input layer
+    \item[5.] An Embedding layer, with the same functioning as that of the Encoder
+\end{enumerate}
+Then, a new LSTM, with exactly the same settings as the previous one, jointly receives
+\begin{itemize}
+    \item[\textbf{-}] the latent representation acquired by the Decoder from the summaries of the test set
+    \item[\textbf{-}] the internal outputs of the third stacked LSTM
+\end{itemize}
+At this point, the attention mechanism between the Encoder and Decoder, as previously defined, is activated. Finally, the output of the Attention Layer is mapped to the final result of the neural network through a "time-distributed" wrapper, which applies a dense layer - activated by a softmax function - to each timestep of the sequence. The final model architecture, as explained, appears as in the figure in Appendix.\\
+\\
+The updating of the neural network weights is defined by the Root Mean Squared Propagation. We opt for a sparse categorical cross-entropy as the loss function, because, unlike the normal cross entropy, it converts the integer sequence into a one-hot encoded vector, saving time and memory thanks to the simplification of the calculation.\\
+This Summarizer will be trained on batches with size of 128, and validated on a test set corresponding to the 10\% of the original "Fine Food reviews" dataset.\\
+The "\texttt{EarlyStopping}" callback is introduced, which stops training procedure in case validation loss value has stopped decreasing for 2 epochs. Due to this early stopping condition, the model training stopped at 29th epoch, requiring almost 7 hours\footnote{The relatively short execution time comes from the use of a GPU on the \textit{Google Colab platform}.}. The learning process is visualized with Figure 8:
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8cm, height=5cm]{vizproc.png}
+\captionof{figure}{Loss results over the epochs\label{fig:img1}}
+\vspace{10pt}
+\par}
+A slight increase in the validation loss is shown after tenth epoch.
+\subsubsection{Final model: Inference phase}
+After training, the inference process involves 6 steps:
 \begin{enumerate}
     \item Encoding of the input sequence and initialization of Decoder with subsequent internal states of the Encoder
     \item Passing of \textit{"start"} token as input to the Decoder
@@ -217,43 +260,33 @@ After training, the model is tested on new reviews whose target sequence is unkn
         \item when hitting a maximum target sequence length 
     \end{itemize}
 \end{enumerate}
-\subsubsection{Attention Mechanism}
-This architecture composed of an Encoder, which converts input into fixed length vectors, and Decoder, which predicts summaries by reading this entire embedding, is plagued by a main limitation: the Encoder struggles to compress long input sentences into a vector and the performance of the neural network deteriorates rapidly as the length increases. This bottleneck is overcome thanks to the so-called \textit{"Attention Mechanism"}, which aims to produce the next word by looking only at specific parts of the sequence. The key intuition behind it consists in selecting the words of the input text which are more relevant to generate a new token at each timestep. First, this is made by computing a score $e_{ij}$ evaluating the alignment between
-\begin{itemize}
-    \item $h_j$, i.e. the hidden state output by Encoder at each timestep of the input sequence j
-    \item $s_i$, i.e. the hidden state output by Decoder at each timestep of the target sequence i 
-\end{itemize}
-In other words, $e_{ij}$ is based on semantic links among input and target tokens, and, in our case, corresponds to the following additive formulation:
-$$e_{ij}=V^Ttahn(W[s_i,h_j])$$ 
-where $V$ and $W$ are the two trainable weights matrices for the neural networks, thanks to which it learns to predict the next word in the sequence. The $e_{ij}$ scores are converted to mutually exclusive probabilities using a softmax function, producing the so-called "attention weights": 
-$$a_{ij}=\frac{e^{e_ij}}{\sum_{k=1}e^{e_ik}}$$
-Then, computing the linear combination among the attention weights and hidden states of the decoder $h_j$, the algorithm extract the context vector of timestep i $C_i$. $C_i$ is concatenated to the hidden state of the decoder at timestep i $s_i$, and this result is finally mapped to the output: the word at timestep i, $\hat{y}_i$ in Figure 6.\\
-\subsubsection{Final model}
-SONO DUE RETI
-Stacked LSTM: it is composed of 3 LSTM 
-
-SPIEGA 'rmsprop' E loss='sparse\_categorical\_crossentropy'\\
-
-The final model architecture appears as in the Figure 7.
-\par
-{\centering\vspace{10pt}
-\includegraphics[width=8.2cm, height=11cm]{model.png}
-\captionof{figure}{Final model architecture\label{fig:img1}}
-\vspace{10pt}
-\par}
-Due to the early stopping condition, the model training stopped at 29th epoch, requiring almost 7 hours. The learning process is visualized with Figure 8:
-\par
-{\centering\vspace{10pt}
-\includegraphics[width=8cm, height=5cm]{vizproc.png}
-\captionof{figure}{Loss results over the epochs\label{fig:img1}}
-\vspace{10pt}
-\par}
-A slight increase in the validation loss is shown after tenth epoch.
 %------------------------------------------------
 \section{Evaluation}
-Only one sentence
+The goal of this project is to compare different Text Summarization methodologies, testing performance and results through the production of a single sentence that should exhaustively extract the essence of an Amazon review.\\
+Generally, different summarizers are compared based on popular scores in the literature - like \textit{ROUGE} or \textit{BLUE} -, but this time an approach based on human judgment\footnote{Two people have evaluated the summaries.} is chosen, because, although it is a simple and expensive method, it allows to have a clearer and more direct view of the capabilities of each model. Therefore, after having randomly selected 27 reviews to be summarized by all the models, these will be assigned a score from 0 to 3 in terms of effectiveness and utility, namely the ability of reporting the main opinion expressed by the Amazon user about the given item. The score will be:
+\begin{itemize}
+    \item[\textbf{0}], if summary is completely non understandable
+    \item[\textbf{1}], if summary is clear but return other concepts or the opposite idea with respect to the original text
+    \item[\textbf{2}], if summary is well comprehensible and provide an information, but this information does not sum up effectively the content of the text
+    \item[\textbf{3}], if summary is perfectly comprehensible and provide the right information about the main content of the text
+\end{itemize}
+The final evaluation will be computed as the average score over the same reviews.
 %------------------------------------------------
 \section{Results and Discussion}
+COMPLESSITA' COMPUTAZIONALE\\
+RISULTATO\\
+\par
+{\centering\vspace{10pt}
+\includegraphics[width=8.5cm, height=5.5cm]{results.png}
+\captionof{figure}{Results in order: Abstractive Summarizer, Latent Semantic Analysis, TextRank, \textit{PyTextRank}, Luhn's algorithm and \textit{BERT} Summarizer.\label{fig:img1}}
+\vspace{10pt}
+\par}
+As fas as Sequence-to-sequence model with Attention Mechanism used for an Abstractive Summarization, possible improvements could be:
+\begin{itemize}
+    \item increasing training dataset size to enhance the model generalization
+    \item implementing a Bi-Directional LSTM architecture, able to capture the context from both the directions, like in BERT structure previously seen, resulting in a better context vector
+    \item incorporating more complex mechanisms inside the architecture, like \textit{pointer-generator networks}, \textit{coverage mechanisms} and \textit{beam search strategy}.
+\end{itemize}
 %----------------------------------------------------------------------------------------
 %	Code
 %----------------------------------------------------------------------------------------
@@ -280,7 +313,17 @@ Bert Extractive Summarizer: https://pypi.org/project/bert-extractive-summarizer/
 
 BEAM SEARCH: https://www.analyticsvidhya.com/blog/2018/03/essentials-of-deep-learning-sequence-to-sequence-modelling-with-attention-part-i/?utm_source=blog&utm_medium=comprehensive-guide-text-summarization-using-deep-learning-python 
 
-Bahdanau Attention: https://arxiv.org/pdf/1409.0473.pdf
+Bahdanau Attention: https://arxiv.org/pdf/1409.0473.pdf\\
 %----------------------------------------------------------------------------------------
+\clearpage
+\onecolumn
+\section*{Appendix}
+\par
+{\centering\vspace{10pt}
+\includegraphics[height=18cm]{model.png}
+\captionof*{figure}{\textbf{Final model architecture}}
+\vspace{10pt}
+\par}
+
 
 \end{document}
