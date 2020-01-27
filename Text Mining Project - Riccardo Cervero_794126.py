@@ -318,13 +318,6 @@ def Luhn_summarize(txt,num_of_sentences = 1):
   summary_sentences = [i for i in ranking['Sentence'][:num_of_sentences]]
   return ' '.join([str(elem) for elem in summary_sentences])
 
-#Example with one review
-print("Review:","\n",db['Text'][99])
-print()
-print("Original summary:","\n",db['Summary'][99])
-print()
-print("Predicted summary:","\n",Luhn_summarize(db['Text'][99]))
-
 # 2.3 DEEP LEARNING BASED
 
 # 2.3.1 Extractive summarization with BERT Summarizer
