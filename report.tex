@@ -69,7 +69,7 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{Customer reviews on E-commerce websites can often be long and too descriptive. Reading prolix comments can be annoying to the other users and analyzing these texts manually is extremely time-consuming. Thus, technical specifications can be applied to generate a summary for any review.\\
-In the context of Natural Language Processing there are various types of Text Summarization methodologies. The objective of this project is to compare some of them, to test their performance in terms of computational complexity and quality of the result. Therefore, 5 algorithms specialized in Estractive Summarization will be implemented, based on the extraction of topics and features, on the construction of a graph or on Deep Learning methods. In addition, a complex architecture suitable for Abstractive Summarization, namely capable of recreating a summary instead of simply selecting the most important parts of the text, will be presented and used. In the last part, all these models will be evaluated manually, to obtain a clearer and more direct analysis of their characteristics.}
+In the context of Natural Language Processing there are various types of Text Summarization methodologies. The objective of this project is to compare some of them, to test their performance in terms of quality of the result. Therefore, 5 algorithms specialized in Estractive Summarization will be implemented, based on the extraction of topics and features, on the construction of a graph or on Deep Learning methods. In addition, a complex architecture suitable for Abstractive Summarization, namely capable of recreating a summary instead of simply selecting the most important parts of the text, will be presented and used. In the last part, all these models will be evaluated manually, to obtain a clearer and more direct analysis of their characteristics.}
 
 %----------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ In the context of Natural Language Processing there are various types of Text Su
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
-
+\newpage
 \section{Dataset Exploration} 
 The texts to be summarized hails from a portion of the \href{https://www.kaggle.com/snap/amazon-fine-food-reviews}{"Fine Food Reviews"} dataset, recording 100,000 natural-language-written reviews in English from more than 70,000 Amazon users. The original data span from October 1999 up to October 2012, including, besides plain text reviews, product and user information, ratings and, above all, a very brew reference summary offered by database providers which will constitute the ground truth during the neural network training phase and an evaluation benchmark.\\
 As seen from the plot, ratings distribution is heavily unbalanced towards most positive score.
@@ -273,15 +273,34 @@ Generally, different summarizers are compared based on popular scores in the lit
 The final evaluation will be computed as the average score over the same reviews.
 %------------------------------------------------
 \section{Results and Discussion}
-COMPLESSITA' COMPUTAZIONALE\\
-RISULTATO\\
+Any consideration about the models capabilities on a test set of 27 reviews can start from the observation of the relationship between the average quality of the summary produced and the variance of the results. The Table 1 shows this data numerically, and the beneath Figure 8 graphically represents it.\par
+{\begin{table}[ht]
+\centering
+\begin{tabular}[t]{lcc}
+\toprule
+&Mean&Std. Deviation\\
+\midrule
+\textbf{LSA}&2.259&0.903\\
+\textbf{TextRank}&2.407&0.747\\
+\textbf{PyTextRank}&1.926&0.917\\
+\textbf{Luhn's}&1.907&0.855\\
+\textbf{BERT}&2.185&0.834\\
+\textbf{LSTM}&2.185&0.921\\
+\bottomrule
+\end{tabular}
+\caption{Quality mean and standard deviation.}
+\end{table}\par}
 \par
 {\centering\vspace{10pt}
 \includegraphics[width=8.5cm, height=5.5cm]{results.png}
 \captionof{figure}{Results in order: Abstractive Summarizer, Latent Semantic Analysis, TextRank, \textit{PyTextRank}, Luhn's algorithm and \textit{BERT} Summarizer.\label{fig:img1}}
 \vspace{10pt}
 \par}
-As fas as Sequence-to-sequence model with Attention Mechanism used for an Abstractive Summarization, possible improvements could be:
+The implementation of the TextRank algorithm appears to be the most satisfactory, having significantly more positive mean and variance than the other models. This, in addition to its intrinsic characteristics, can derive from the choice to exploit \textit{GloVe} to obtain the vector representation of the text. The embedding extracted from it evidently collects efficiently the context necessary to interpret the importance of each term in the summary. The second best average quality is achieved by the Latent Semantic Analysis, which however has a much greater variability than TextRank. The topic-based strategy turns out to be good, but not excellent. Its higher standard deviation translates into less reliability. Contrary to what might have been expected, BERT fine-tuned neural network, despite its depth, cannot reach a high average, but still offers a lower variability. Finally, Luhn's algorithm and TextRank variation prove to be the most scarce. As for the first, this result can be considered obvious, due to its simplicity: the mere counting of keywords within the sentences, without delving deeper into their context, could not have been sufficient. \texttt{PyTextRank} can be interpreted as a more superficial implementation of the hand-crafted TextRank algorithm: it exploits a low level text representation - \textit{tf.idf} - and performs lemmatization, which inevitably involves a serious loss of meaning. Its poor result and its variability demonstrate how important it is to consider the context of words and not to perform any lemmatization/stemming operation.\\
+Regarding Sequence-to-sequence model with Attention Mechanism used for an Abstractive Summarization, we can be satisfied, because, despite the greater complexity of the task, the internal mechanisms of the model manage to produce decent summaries, on the same average level as BERT. Anyway, as expected, the model is the least reliable. In details, the summaries produced are often short, have a very simple syntax and their expressive ability varies: sometimes the result is incomprehensible, other times it reports a message which is exactly opposite compared to the original review; in best cases, it manages to synthesize the meaning much more effectively than other extractive approaches.
+Further disadvantages are the extreme computational heaviness and the consequent lengthening of the time needed to train the model.\\
+\\
+Possible improvements to the last model could be:
 \begin{itemize}
     \item increasing training dataset size to enhance the model generalization
     \item implementing a Bi-Directional LSTM architecture, able to capture the context from both the directions, like in BERT structure previously seen, resulting in a better context vector
@@ -294,26 +313,55 @@ As fas as Sequence-to-sequence model with Attention Mechanism used for an Abstra
 \href{https://github.com/RCrvro/Text-Summarization-Project}{Code is available at this link.}
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
-
 %----------------------------------------------------------------------------------------
+\newpage
 \phantomsection
-\bibliographystyle{unsrt}
-\bibliography{sample}
-GloVe: https://nlp.stanford.edu/projects/glove/
+\begin{thebibliography}{9}
 
-PyTextRank: https://pypi.org/project/pytextrank/
+\bibitem{Dataset0} 
+\textit{\href{https://www.kaggle.com/snap/amazon-fine-food-reviews}{Amazon Fine Food Reviews - Analyze ~500,000 food reviews from Amazon}}, Kaggle Dataset, 2016.
 
-Luhn: http://courses.ischool.berkeley.edu/i256/f06/papers/luhn58.pdf
+\bibitem{Dataset} 
+J. McAuley, J. Leskovec. 
+\textit{\href{http://i.stanford.edu/~julian/pdfs/www13.pdf}{From Amateurs to Connoisseurs: Modeling the Evolution of User Expertise through Online Reviews}}, 2013.
 
-BERT: https://arxiv.org/abs/1810.04805
+\bibitem{LSA} 
+R. M. Badry, A. S. Eldin, D. S. Elzanfally. 
+\textit{\href{https://pdfs.semanticscholar.org/747b/bc32e1eac5ce85dd69fb2693a7d3bd18b53b.pdf}{Text Summarization within the Latent Semantic Analysis Framework: Comparative Study}}, 2013.
 
-BERT Architecture: https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270
+\bibitem{GloVe} 
+J. Pennington, R. Socher, C. D. Manning. 
+\textit{\href{https://nlp.stanford.edu/projects/glove/}{GloVe: Global Vectors for Word Representation}}, 2014.
+ 
+\bibitem{PyTextRank} 
+P. X. Nathan. 
+\textit{\href{https://pypi.org/project/pytextrank/
+}{PyTextRank Documentation}}, 2019.
 
-Bert Extractive Summarizer: https://pypi.org/project/bert-extractive-summarizer/
+\bibitem{Luhn} 
+H. P. Luhn. 
+\textit{\href{http://courses.ischool.berkeley.edu/i256/f06/papers/luhn58.pdf}{The Automatic Creation of Literature Abstracts}}, 1958.
 
-BEAM SEARCH: https://www.analyticsvidhya.com/blog/2018/03/essentials-of-deep-learning-sequence-to-sequence-modelling-with-attention-part-i/?utm_source=blog&utm_medium=comprehensive-guide-text-summarization-using-deep-learning-python 
+\bibitem{BERT1} 
+J. Devlin, M. Chang, K. Lee, K. Toutanova. 
+\textit{\href{https://arxiv.org/abs/1810.04805}{BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}}, 2019.
 
-Bahdanau Attention: https://arxiv.org/pdf/1409.0473.pdf\\
+\bibitem{BERT2} 
+R. Horev. 
+\textit{\href{https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270}{BERT Explained: State of the art language model for NLP}}, 2018.
+
+\bibitem{BERT3} 
+D. Miller. 
+\textit{\href{https://pypi.org/project/bert-extractive-summarizer/}{Bert Extractive Summarizer}}, 2019.
+
+\bibitem{Attention} 
+D. Bahdanau, K. Cho, Y. Bengio. 
+\textit{\href{https://arxiv.org/pdf/1409.0473.pdf}{Neural Machine Translation by jointly learning to align and translate}}, 2015.
+
+\bibitem{Seq2Seq} 
+F. Shaikh. 
+\textit{\href{https://www.analyticsvidhya.com/blog/2018/03/essentials-of-deep-learning-sequence-to-sequence-modelling-with-attention-part-i/?utm_source=blog&utm_medium=comprehensive-guide-text-summarization-using-deep-learning-python}{Essentials of Deep Learning – Sequence to Sequence modelling with Attention (using python)}}, 2018.
+\end{thebibliography}
 %----------------------------------------------------------------------------------------
 \clearpage
 \onecolumn
@@ -321,7 +369,7 @@ Bahdanau Attention: https://arxiv.org/pdf/1409.0473.pdf\\
 \par
 {\centering\vspace{10pt}
 \includegraphics[height=18cm]{model.png}
-\captionof*{figure}{\textbf{Final model architecture}}
+\captionof*{figure}{\textbf{Final architecture of Seq2Seq model for Abstractive Summarization}}
 \vspace{10pt}
 \par}
 
