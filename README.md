@@ -1,4 +1,6 @@
-<div style="text-align: right"> your-text-here </div>
+Riccardo Cervero\
+794126\
+Università degli studi di Milano Bicocca, A.Y. 2019-2020
 
 # Text Summarization Project
 Different methodologies for performing the summarization of [Amazon Food Reviews](https://www.kaggle.com/snap/amazon-fine-food-reviews):
