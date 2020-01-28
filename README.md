@@ -7,13 +7,12 @@ Different methodologies for performing the summarization of Amazon Food Reviews:
 4. Luhn's Algorithm
 5. Bert Extractive Summarizer
 ## Abstractive Summarization
-6. Sequence-to-sequence LSTM model with Attention mechanism\\
-\\
-\\
-\\
-\\
+6. Sequence-to-sequence LSTM model with Attention mechanism
+
+
+
 ### Specific requirements for Bert Extractive Summarizer
-`pip install spacy==2.1.3`\\
-`pip install transformers==2.2.0`\\
-`pip install bert-extractive-summarizer`\\
+`pip install spacy==2.1.3`\
+`pip install transformers==2.2.0`\
+`pip install bert-extractive-summarizer`\
 
