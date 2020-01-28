@@ -1,5 +1,5 @@
 # Text Summarization Project
-Different methodologies for performing the summarization of \href{https://www.kaggle.com/snap/amazon-fine-food-reviews} {Amazon Food Reviews}:
+Different methodologies for performing the summarization of [Amazon Food Reviews](https://www.kaggle.com/snap/amazon-fine-food-reviews):
 ## Extractive Summarization
 1. Latent Semantic Analysis
 2. TextRank Algorithm
