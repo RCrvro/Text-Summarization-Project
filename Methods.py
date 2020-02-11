@@ -1,7 +1,3 @@
-###TEXT MINING PROJECT
-###RICCARDO CERVERO, 794126
-##Università degli Studi di Milano Bicocca, A.Y. 2019-2020
-
 #Import packages
 import numpy as np
 import pandas as pd
