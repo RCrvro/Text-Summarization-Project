@@ -16,3 +16,5 @@ Different methodologies for performing the summarization of [Amazon Food Reviews
 `pip install transformers==2.2.0`\
 `pip install bert-extractive-summarizer`
 
+---------------------------------------------------------------------
+Link to the presentation: https://prezi.com/p/dgqza5rl_lan/?present=1 
